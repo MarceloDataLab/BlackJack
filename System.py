@@ -5,8 +5,9 @@
 import random
 
 class Dealer:
-    pass
-
+    def __init__(self):
+        self.hand = []
+    
 class Player:
     """
     The Player class represents a player in the Blackjack game. 
@@ -14,18 +15,25 @@ class Player:
     """
     def __init__(self, username, deposit):
         self.username = username
-        self.deposit = deposit
+        self.balance = deposit
         self.deposit_history = []
+        self.hand = []
     
-        
+    def make_deposit(self,deposit):
+        self.balance += deposit
+        self.deposit_history.append(deposit)
+    
+    def __repr__(self):
+        return f"Your balance is {self.balance}$ and your earnings are {self.balance - sum(self.deposit_history)}$"
+    
 class Cards:
     """
     Initialize a new Cards instance. This constructor creates a deck of cards and shuffles it.
     """
     def __init__(self):
-        self.decks = self.create_decks()
+        self.deck = self.create_deck()
     
-    def create_decks(self):
+    def create_deck(self):
         """
         Create a standard deck of 52 cards.
         """
@@ -37,11 +45,37 @@ class Cards:
         return decks # Shuffled deck
     
     def one_card(self):
-        if self.decks:
-            return self.decks.pop()
+        if self.deck:
+            return self.deck.pop() # it gives one card and take out from shuffled deck
         
-class Checker:
-    pass
+class BlackJack:
+    def __init__(self, user, deposit):
+        self.dealer = Dealer()
+        self.player = Player(user, deposit)
+    
+    def check_username(self):
+        while not self.player.username  or self.player.username.strip() == "":
+            self.player.username = str(input("Username cannot be empty. Please enter a valid username: ")).strip()
 
-cards = Cards()
-print(cards.decks)
+    def check_balance(self):
+        while self.player.balance < 5:
+            print("make a deposit! minimun amount to play is 5$")
+            deposit = int(input("how much would you like to deposit? "))
+            self.player.make_deposit(deposit)
+            print("deposited successfully!")
+    
+    def start(self):
+        pass
+    
+    def open(self):
+        pass
+            
+if __name__ == "__main__":
+    user = input(f"insert username: ")
+    deposit = int(input(f"insert money here: "))
+    game = BlackJack(user, deposit)
+    game.check_username()
+    game.check_balance()
+
+    while game.open():
+        pass
