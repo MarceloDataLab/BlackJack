@@ -8,6 +8,9 @@ class Dealer:
     def __init__(self):
         self.hand = []
     
+    def play_hand(self):
+        pass    
+
 class Player:
     """
     The Player class represents a player in the Blackjack game. 
@@ -22,6 +25,9 @@ class Player:
     def make_deposit(self,deposit):
         self.balance += deposit
         self.deposit_history.append(deposit)
+        
+    def play_cards(self):
+        pass
     
     def __repr__(self):
         return f"Your balance is {self.balance}$ and your earnings are {self.balance - sum(self.deposit_history)}$"
@@ -52,7 +58,8 @@ class BlackJack:
     def __init__(self, user, deposit):
         self.dealer = Dealer()
         self.player = Player(user, deposit)
-    
+        self.cards = Cards()
+        
     def check_username(self):
         while not self.player.username  or self.player.username.strip() == "":
             self.player.username = str(input("Username cannot be empty. Please enter a valid username: ")).strip()
@@ -65,11 +72,16 @@ class BlackJack:
             print("deposited successfully!")
     
     def start(self):
-        pass
-    
-    def open(self):
-        pass
-            
+        self.cards.create_deck()
+        self.player.hand.append(self.cards.one_card())
+        self.player.hand.append(self.cards.one_card())
+        self.dealer.hand.append(self.cards.one_card())
+        self.dealer.hand.append(self.cards.one_card())
+
+
+    def open(self,play_again=True):
+        return play_again
+      
 if __name__ == "__main__":
     user = input(f"insert username: ")
     deposit = int(input(f"insert money here: "))
@@ -77,5 +89,4 @@ if __name__ == "__main__":
     game.check_username()
     game.check_balance()
 
-    while game.open():
-        pass
+    game.start()
