@@ -147,12 +147,69 @@ class BlackJack:
                 dec = input("Hit or Stay: ")
             return self.calculate_hand_value(self.player.hand)                
                                
-    def dealer_play(self):
-        return 19
-    
-    def check_result(self, result_player, result_dealer):
-        pass
-    
+    def dealer_play(self, result_player):
+        value = self.calculate_hand_value(self.dealer.hand)
+        print(f"{self.dealer.hand} is {value}")
+        
+        if len(self.dealer.hand) < 3 and value == 21:
+            return 1000
+            
+        elif self.dealer.hand[0][0] == self.dealer.hand[1][0]:
+            print("Play Double")
+            deck1 = [self.dealer.hand[0]]
+            deck1.append(self.cards.one_card())
+            print(f"First hand: {deck1}")
+            value = self.calculate_hand_value(deck1)
+            if len(deck1) < 3 and value == 21:
+                return 1000
+            
+            while True:
+                if self.calculate_hand_value(deck1) >= result_player:
+                    break
+                else:
+                    deck1.append(self.cards.one_card())
+                    value = self.calculate_hand_value(deck1)
+                    print(f"{deck1} is {value}")
+                    if value > 21:
+                        deck1 = [["0", "0"]]
+                        break
+                    elif value == 21:
+                        return 21
+                                  
+            deck2 = [self.player.hand[1]]
+            deck2.append(self.cards.one_card())
+            print(f"second hand: {deck2}")
+            
+            while True:
+                if self.calculate_hand_value(deck2) >= result_player:
+                    break
+                else:
+                    deck2.append(self.cards.one_card())
+                    value = self.calculate_hand_value(deck2)
+                    print(f"{deck2} is {value}")
+                    if value > 21:
+                        deck2 = [["0", "0"]]
+                        break
+                    elif value == 21:
+                        return 21
+                                  
+            result_deck1, result_deck2 = self.calculate_hand_value(deck1), self.calculate_hand_value(deck2)
+            return max(result_deck1, result_deck2)
+        
+        else:
+
+            while True:
+                if self.calculate_hand_value(self.dealer.hand) >= result_player:
+                    return self.calculate_hand_value(self.dealer.hand)
+                else:
+                    self.dealer.hand.append(self.cards.one_card())
+                    value = self.calculate_hand_value(self.dealer.hand)
+                    print(f"{self.dealer.hand} is {value}")
+                    if value > 21:
+                        return 0
+                    elif value == 21:
+                        return 21
+        
     def start(self):
         self.cards.create_deck()
         self.player.hand.append(self.cards.one_card())
@@ -160,7 +217,20 @@ class BlackJack:
         self.dealer.hand.append(self.cards.one_card())
         self.dealer.hand.append(self.cards.one_card())
         result_player = self.player_play()
-        result_dealer = self.dealer_play()
+        if result_player == 1000:
+            return "blackjack for player"
+        elif result_player == 21:
+            return "21 you win!"
+        
+        result_dealer = self.dealer_play(result_player)
+        
+        if result_player > result_dealer:
+            return "you win"
+        elif result_dealer > result_player:
+            return "dealer win"
+        else:
+            return "Draw"
+        
         
     def open(self,play_again=True):
         return play_again
@@ -172,4 +242,5 @@ if __name__ == "__main__":
     game.check_username()
     game.check_balance()
 
-    game.start()
+    result = game.start()
+    print(result)
